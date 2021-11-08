@@ -1,3 +1,5 @@
+"use strict"
+
 const SRC_STYLES_FOLDER = 'styles';
 const SRC_ASSETS_FOLDER = 'assets';
 const SRC_COMPONENTS_FOLDER = 'components';
@@ -32,16 +34,17 @@ catch (err) {
 async function readFiles(dir) {
   const files = await fsPromises.readdir(dir, { withFileTypes: true });
 
-  for await (file of files) {
+  for await (const file of files) {
     if (file.name === SRC_ASSETS_FOLDER && !file.isFile()) {
       deleteFiles(pathProjectAssetsFolder);
-      // console.log(1);
-      copyFiles(pathAssetsFolder, pathProjectAssetsFolder);
+      setTimeout(() => {
+        copyFiles(pathAssetsFolder, pathProjectAssetsFolder);
+      }, 500);
     }
     else if (file.name === SRC_STYLES_FOLDER && !file.isFile()) {
       const files = await fsPromises.readdir(pathStyles, { withFileTypes: true });
 
-      for await (file of files) {
+      for await (const file of files) {
         if(file.isFile() && path.extname(file.name) === '.css') {
           const filePath = path.join(pathStyles, file.name);
 
@@ -89,14 +92,14 @@ async function deleteFiles(folderPath) {
       const files = await fsPromises.readdir(folderPath, { withFileTypes: true });
       const folders = [];
     
-      for await (file of files) {
+      for await (const file of files) {
         if(file.isFile()) {
           fs.unlink(path.join(folderPath, file.name), err => { if (err) throw err });
         }
         else folders.push(file.name);
       };
     
-      for await (folder of folders) {
+      for await (const folder of folders) {
         const subFolderPath = path.join(folderPath, folder);
         deleteFiles(subFolderPath);
       }
@@ -112,7 +115,7 @@ async function copyFiles(folderPathFrom, folderPathTo) {
   const files = await fsPromises.readdir(folderPathFrom, { withFileTypes: true });
   const folders = [];
 
-  for await (file of files) {
+  for await (const file of files) {
     if(file.isFile()) {
       const filePathFrom = path.join(folderPathFrom, file.name);
       const filePathTo = path.join(folderPathTo, file.name);
@@ -122,9 +125,7 @@ async function copyFiles(folderPathFrom, folderPathTo) {
     else folders.push(file.name);
   };
 
-  console.log(folderPathTo, folders);
-
-  for await (folder of folders) {
+  for await (const folder of folders) {
     const subFolderPathFrom = path.join(folderPathFrom, folder);
     const subFolderPathTo = path.join(folderPathTo, folder);
 
