@@ -21,9 +21,9 @@ async function readFiles(dir) {
       const extName = path.extname(fileDir);
       const baseName = path.basename(fileDir, extName);
       const stat = await (await fsPromises.open(fileDir)).stat();
-      const size = stat.size / 1000;
+      const size = Math.floor(stat.size / 1024 * 100) / 100;
 
-      console.log(`${baseName} - ${extName.substring(1)} - ${size}kb`);
+      console.log(`${baseName} - ${extName.substring(1)} - ${size} kb`);
     };
   });
 }
